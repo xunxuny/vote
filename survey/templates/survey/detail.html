@@ -1,0 +1,136 @@
+{% extends "survey/base.html" %}
+{% block title %} IOT-BBS {% endblock %}
+{% block extra_header %}
+<style type="text/css" media="all">
+ fieldset {
+    padding:5px;
+    width:100%;
+    border:#06c dashed 1px;
+}
+ .formBodyNoTop {
+    margin: 0 5px 5px 5px;
+}
+.sform p
+{
+	display: inline-table;/* IE 6/7 inline */
+}
+label {
+    float: none;
+}
+</style>
+{% endblock %}
+
+{% block form_body %}
+    <div class="formBodyNoTop">
+        <div class="sform">
+
+            <fieldset>
+                 <legend>投票项目</legend>
+            <p>{{ obj.descn }}</p><br>
+            {% for o in options %}
+            <input type={{obj.type}}  name="option" value={{o.id}} ><label>{{o.name}}</label><br>
+            {% endfor %}
+            </fieldset>
+            <form action="edit/" method="post" id="id_vote_form">
+                {% csrf_token %}
+                <fieldset>
+                     <legend>编辑投票</legend>
+                <div id="id_vote_form_">
+                    <table> <tbody class="form_body">
+                    </tbody></table>
+                </div>           
+                <input style="display: none;" type="submit" id="id_vote_save" value="保存">
+                <input style="display: none;" type="button" id="id_vote_cancel" value="撤销">
+                </fieldset>
+            </form>
+            <form action="append/" method="post" id="id_option_form">
+                <fieldset>
+                 <legend>添加选项</legend>
+                {% csrf_token %}
+                <label>选项:</label><input type="text" name="option_name" >
+                <input style="display: none;" type="submit" id="id_option_save" value="保存">
+                <input style="display: none;" type="button" id="id_option_cancel" value="撤销">
+                </fieldset>
+            </form>
+        </div>
+        {% if obj.status == "unstarted" %}
+        <button type="button" id="id_edit_vote" >编辑投票</button>
+        <button type="button" id="id_append_options" >添加选项</button>
+        <button type="button" id="id_remove_options" >删除选项</button>
+        <button type="button" onclick='if (confirm("确认生成脚本，生成后将不能再编辑？"))location.href="{% url table_launch obj.id %}"' >生成嵌入脚本</button>
+        <button style="float: right;" type="button" onclick='if (confirm("确认删除当前投票项？"))
+                location.href="{% url table_delete obj.id %}"' >删除投票</button>
+        {% endif %}
+        {% if obj.status == "started" %}
+        <fieldset>
+                 <legend>嵌入脚本</legend>
+                <p>复制下列脚本,并粘帖到论坛帖子里就可以发起投票了！</p>
+                <div style="background: #dcdcdc;">
+
+                    [html]&lt;div id="widget-container"&gt;&lt;/div&gt;
+<br>                        &lt;script type="text/javascript"&gt;
+<br>                        var __vote_id = {{obj.id}};
+<br>                        &lt;/script&gt;
+<br>                        &lt;script src="{{STATIC_URL}}survey/js/wiget_data.js" type="text/javascript"&gt;&lt;/script&gt;[/html]
+                                        
+                </div>
+        </fieldset>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block footer_js %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(function(){
+            $("#id_vote_form").hide();
+            $("#id_edit_vote").click(function(){
+                $('button').hide();
+                $('#id_vote_form').show();
+                $("#id_vote_cancel").toggle();
+                $('#id_vote_save').toggle();
+                $.get('{% url table_edit obj.id %}', function(data) {
+                    $('#id_vote_form_').html(data);
+                });
+
+                
+            });
+            $("#id_vote_cancel").click(function(){
+                $('#id_vote_save').toggle();
+                $("#id_vote_cancel").toggle();
+                $('#id_vote_form').hide();
+                $('button').show();
+            });
+            $('#id_option_form').hide();
+            $("#id_append_options").click(function(){
+                $('button').hide();
+                $('#id_option_form').show();
+                $("#id_option_cancel").toggle();
+                $('#id_option_save').toggle();
+
+            });
+            $("#id_option_cancel").click(function(){
+                $('#id_option_save').toggle();
+                $("#id_option_cancel").toggle();
+                $('#id_option_form').hide();
+                $('button').show();
+            });
+            $("#id_remove_options").click(function(){
+                if ( confirm("确认删除当前选项？")) {
+                    var e = document.getElementsByName("option");
+                    var option_ids='';
+                    for (var i=0;i<e.length;i++){
+                        if(e[i].checked){
+                            option_ids=option_ids+','+e[i].value;
+                        }
+                    }
+                    $.post("{% url option_delete obj.id %}", {'options': option_ids}, function() {
+                        location.reload();
+                    });
+                }
+
+            });
+        });
+    </script>
+{% endblock %}
+

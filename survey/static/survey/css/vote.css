@@ -1,0 +1,54 @@
+.svote-root .svote-time {
+
+    color: #999999;
+    font-size: 12px;
+}
+.svote-root h3 {
+}
+.svote-root li {
+    list-style: none outside none;
+    margin-bottom: 8px;
+    background-color: #f8f8ff;
+}
+.svote-root ul {
+    padding:0px;
+    margin: 3px;
+    line-height: 120%;
+    width: 450px;
+}
+.svote-root .svote-descn{
+    font-weight: bold;
+}
+.svote-root .svote-option{
+    float: left;
+    margin: 3px 8px 0 0;
+    width: auto !important;
+}
+.svote-root .svote-optionname{
+
+}
+.svote-root .svote-resultbg{
+    margin-top:3px;
+    margin-left:20px;
+    height: 10px;
+    width: 300px;
+    background:#dcdcdc;
+    float: left;
+}
+.svote-root .svote-resultfg{
+    height: 10px;
+    background: #3C78B5;
+}
+.svote-root .svote-voters{
+    display: none;
+    color: gray;
+    margin-left: 20px;
+}
+.svote-root .svote-count{
+    position:relative;
+    left:20px;
+
+}
+.svote-root .svote-button{
+    margin-left:20px;
+}

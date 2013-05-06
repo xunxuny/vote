@@ -1,0 +1,47 @@
+{% extends "survey/base.html" %}
+{% block title %} IOT-BBS {% endblock %}
+
+{% block extra_header %}
+<style type="text/css" media="all">
+table {
+    padding:10px;
+    color:#000;
+    width:100%;
+    text-align:center;
+}
+td,th{
+    border: 1px solid #ccc;
+}
+</style>
+{% endblock %}
+
+{% block form_body %}
+    <div >
+        <table >
+            <tr >
+            <th>投票项目名称</th>
+            <th>发起人</th>
+            <th>操作</th>
+            </tr>
+            {% for obj in objs %}
+            <tr >
+            <td><a href="{% url table_vote obj.id%}">{% if obj.name %}{{ obj.name }}{% else %}无标题{% endif %}</a></td>
+            <td>{{ obj.created_by }}</td>
+            <td>
+                {% if user == obj.created_by %}
+                    <a href="{% url table_detail obj.id%}">查看详情</a>
+                    {% if obj.status == "started"%}
+                    <a href="{% url table_finish obj.id%}">关闭</a>
+                    {% endif %}
+                    {% if obj.status == "finished" %}
+                    <a href="{% url table_reset obj.id%}">重置</a>
+                    {% endif %}
+
+                {% endif %}
+
+            </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}

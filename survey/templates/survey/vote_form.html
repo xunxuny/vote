@@ -1,0 +1,54 @@
+        <div class="svote-root">
+            <form action="" method="post" id="id_vote_form">
+                 {% csrf_token %}
+            <h3>{{obj.name}}</h3>
+            {% if  user.is_anonymous %}
+                <p class="svote-time">需登录后才能进行投票！</p>
+            {% endif %}
+            {% if obj.status != "started" %}<p class="svote-time" >该投票已结束！</p>
+                {% else %} {% if obj.end_time %}<p class="svote-time"  id="id_time"></p>{% endif %}{% endif %}
+
+            <p class="svote-descn">{{ obj.descn }}</p>
+            <ul class="vote">
+            {% for o in options %}
+            <li>
+                <input class="svote-option" type={{obj.type}}  name='option' value={{o.id}} >
+                <span class="svote-optionname">{{o.name}}</span>
+                <div><div class="svote-resultbg" >
+                    <div class="svote-resultfg"style="width: {{ o.count_percentage }}">&nbsp;</div>
+                </div><div class="svote-count">&nbsp;{{o.votecount|floatformat}}票({{o.count_percentage }})</div></div>
+                <div class="svote-voters" >{{ o.show_voters }}</div>
+            </li>
+            {% endfor %}
+            </ul>
+            <div style="padding-top:5px;">
+            <button class="svote-button" type="button" id="id_vote"  >投票</button>
+            <button  class="svote-button" type="button" id="id_voter_show">显示投票人信息</button >
+            </div>
+            </form>
+        </div>
+
+{% block footer_js %}
+    <script type="text/javascript">
+        $(function(){
+            setTime();
+        });
+        function setTime(){
+            var days='{{ timediff.days }}';
+            var seconds='{{timediff.seconds }}';
+            var endhours = '{{obj.end_time|date:"H:i"}}'.split(':');
+            var minuties=(parseInt(seconds)-parseInt(seconds)%60)/60;
+            var m=minuties%60;
+            var h=(minuties-m)/60;
+            var s= parseInt(seconds)%60;
+            if(s>=30){
+                m=m+1;
+            }
+            if (days>=0){
+                document.getElementById('id_time').innerHTML="距离投票结束还有 "+days+" 天 "+h+" 小时"+m+"分钟！";
+            }
+
+            setTimeout('setTime()',30000);
+        }
+    </script>
+{% endblock %}
